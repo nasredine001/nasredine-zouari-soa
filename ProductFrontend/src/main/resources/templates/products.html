@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Produits — TP4</title>
+    <style>
+        :root { --ink:#172033; --muted:#6b7890; --line:#e3e8f2; --brand:#2f5bea; --brand-dark:#1d3fb8; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:"Segoe UI",system-ui,-apple-system,sans-serif; color:var(--ink); background:#f4f6fb; }
+        .topbar { display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:space-between;
+                  padding:26px 34px; color:#fff; background:linear-gradient(120deg,#172033,#2f5bea); }
+        .topbar h1 { margin:0; font-size:24px; letter-spacing:-.02em; }
+        .subtitle { margin:4px 0 0; color:#c7d3ff; font-size:13px; }
+        nav { display:flex; gap:10px; flex-wrap:wrap; }
+        main { max-width:1080px; margin:28px auto; padding:0 20px; }
+        .card { background:#fff; border:1px solid var(--line); border-radius:14px; box-shadow:0 10px 30px rgba(23,32,51,.06); overflow:hidden; }
+        table { width:100%; border-collapse:collapse; }
+        th { text-align:left; padding:14px 18px; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); background:#f8faff; border-bottom:1px solid var(--line); }
+        td { padding:14px 18px; border-bottom:1px solid var(--line); font-size:14px; vertical-align:middle; }
+        tr:last-child td { border-bottom:none; }
+        tr:hover td { background:#fbfcff; }
+        .strong { font-weight:600; }
+        .right { text-align:right; }
+        .empty { text-align:center; color:var(--muted); padding:32px; }
+        .badge { display:inline-block; min-width:44px; text-align:center; padding:4px 9px; border-radius:999px; background:#eef3ff; color:var(--brand-dark); font-weight:600; font-size:12px; }
+        .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:9px 14px; border-radius:9px;
+               border:1px solid var(--line); background:#fff; color:var(--ink); font-size:13px; font-weight:600;
+               text-decoration:none; cursor:pointer; transition:.15s; }
+        .btn:hover { border-color:#c9d4ea; transform:translateY(-1px); }
+        .btn.primary { background:var(--brand); border-color:var(--brand); color:#fff; }
+        .btn.primary:hover { background:var(--brand-dark); }
+        .btn.danger { color:#b42318; border-color:#f1c9c4; background:#fff6f5; }
+        .btn.danger:hover { background:#ffe9e6; }
+        .alert { margin-bottom:16px; padding:12px 16px; border-radius:10px; font-size:14px; }
+        .alert.success { background:#eafaf0; color:#17663a; border:1px solid #bfe9cf; }
+        .alert.error { background:#fff2f0; color:#a1281c; border:1px solid #f5cdc7; }
+        footer { max-width:1080px; margin:18px auto 40px; padding:0 20px; color:var(--muted); font-size:12px; }
+        footer a { color:var(--brand); text-decoration:none; }
+        @media (max-width:640px) { .topbar { padding:20px; } td,th { padding:10px 12px; } }
+    </style>
+</head>
+<body>
+<header class="topbar">
+    <div>
+        <h1>Gestion des produits</h1>
+        <p class="subtitle">Front-end Thymeleaf · API REST Produits</p>
+    </div>
+    <nav>
+        <a class="btn primary" th:href="@{/produits/nouveau}">+ Nouveau produit</a>
+        <a class="btn" href="http://localhost:8080/app/orders/commandes">Commandes →</a>
+    </nav>
+</header>
+
+<main>
+    <div class="alert success" th:if="${message}" th:text="${message}"></div>
+    <div class="alert error" th:if="${error}" th:text="${error}"></div>
+
+    <div class="card">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Description</th>
+                <th>Prix</th>
+                <th>Stock</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(products)}">
+                <td colspan="6" class="empty">Aucun produit pour le moment.</td>
+            </tr>
+            <tr th:each="p : ${products}">
+                <td th:text="${p.id}">1</td>
+                <td class="strong" th:text="${p.name}">Pencil</td>
+                <td th:text="${p.description} ?: '—'">Crayon HB</td>
+                <td th:text="${#numbers.formatDecimal(p.price, 1, 2)} + ' DT'">1.50 DT</td>
+                <td><span class="badge" th:text="${p.stock}">100</span></td>
+                <td class="right">
+                    <form th:action="@{/produits/{id}/supprimer(id=${p.id})}" method="post"
+                          onsubmit="return confirm('Supprimer ce produit ?');">
+                        <button class="btn danger" type="submit">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<footer>
+    TP4 — Architecture micro-services ·
+    <a href="http://localhost:8080/graphiql">GraphiQL</a> ·
+    <a href="http://localhost:8761">Eureka</a>
+</footer>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GraphiQL — TP4</title>
+    <style>
+        body { height: 100%; margin: 0; width: 100%; overflow: hidden; }
+        #graphiql { height: 100vh; }
+        #fallback { padding: 24px; font-family: "Segoe UI", system-ui, sans-serif; color: #a1281c; }
+    </style>
+    <!-- Assets servis localement : plus de dépendance à unpkg.com -->
+    <link rel="stylesheet" href="/graphiql/graphiql.min.css">
+</head>
+<body>
+<div id="graphiql">Chargement de GraphiQL…</div>
+<div id="fallback" hidden></div>
+
+<script src="/graphiql/react.production.min.js"></script>
+<script src="/graphiql/react-dom.production.min.js"></script>
+<script src="/graphiql/graphiql.min.js"></script>
+<script>
+    (function () {
+        const container = document.getElementById('graphiql');
+        const fallback = document.getElementById('fallback');
+
+        if (typeof GraphiQL === 'undefined' || typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
+            container.hidden = true;
+            fallback.hidden = false;
+            fallback.textContent = "Impossible de charger GraphiQL : vérifiez que les fichiers sont bien servis sous /graphiql/.";
+            return;
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const path = params.get('path') || '/graphql';
+        const url = window.location.protocol + '//' + window.location.host + path;
+
+        const fetcher = GraphiQL.createFetcher({ url: url });
+
+        ReactDOM.render(
+            React.createElement(GraphiQL, {
+                fetcher: fetcher,
+                defaultVariableEditorOpen: true,
+                headerEditorEnabled: true,
+                shouldPersistHeaders: true
+            }),
+            container
+        );
+    })();
+</script>
+</body>
+</html>

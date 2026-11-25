@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nouvelle commande — TP4</title>
+    <style>
+        :root { --ink:#172033; --muted:#6b7890; --line:#e3e8f2; --brand:#2f5bea; --brand-dark:#1d3fb8; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:"Segoe UI",system-ui,-apple-system,sans-serif; color:var(--ink); background:#f4f6fb; }
+        .topbar { padding:26px 34px; color:#fff; background:linear-gradient(120deg,#172033,#2f5bea); }
+        .topbar h1 { margin:0; font-size:24px; letter-spacing:-.02em; }
+        .subtitle { margin:4px 0 0; color:#c7d3ff; font-size:13px; }
+        main { max-width:860px; margin:28px auto; padding:0 20px; }
+        .card { background:#fff; border:1px solid var(--line); border-radius:14px; box-shadow:0 10px 30px rgba(23,32,51,.06); padding:26px; }
+        .form { display:flex; flex-direction:column; gap:20px; }
+        label { display:flex; flex-direction:column; gap:7px; font-size:13px; font-weight:600; color:#33415c; }
+        input, select { width:100%; padding:11px 13px; border:1px solid #d5ddec; border-radius:9px; font:inherit; font-weight:400; color:var(--ink); background:#fbfcff; }
+        input:focus, select:focus { outline:none; border-color:var(--brand); box-shadow:0 0 0 3px rgba(47,91,234,.12); }
+        .line { display:grid; grid-template-columns:1fr 120px; gap:14px; align-items:end; }
+        .line-title { margin:0 0 2px; font-size:13px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
+        .actions { display:flex; justify-content:flex-end; gap:10px; padding-top:6px; }
+        .btn { display:inline-flex; align-items:center; justify-content:center; padding:10px 16px; border-radius:9px; border:1px solid var(--line);
+               background:#fff; color:var(--ink); font-size:13px; font-weight:600; text-decoration:none; cursor:pointer; }
+        .btn.primary { background:var(--brand); border-color:var(--brand); color:#fff; }
+        .btn.primary:hover { background:var(--brand-dark); }
+        .alert { margin-bottom:16px; padding:12px 16px; border-radius:10px; font-size:14px; }
+        .alert.error { background:#fff2f0; color:#a1281c; border:1px solid #f5cdc7; }
+        .hint { margin:0; color:var(--muted); font-size:12px; }
+        @media (max-width:560px) { .line { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+<header class="topbar">
+    <h1>Nouvelle commande</h1>
+    <p class="subtitle">Mutation GraphQL createOrder · prix et stock validés par le service Produits</p>
+</header>
+
+<main>
+    <div class="alert error" th:if="${error}" th:text="${error}"></div>
+
+    <form class="card form" th:action="@{/commandes}" th:object="${orderForm}" method="post">
+        <label>Identifiant du client
+            <input type="number" min="1" th:field="*{customerId}" placeholder="1" required>
+        </label>
+
+        <p class="line-title">Articles (lignes vides ignorées)</p>
+
+        <div class="line">
+            <label>Produit 1
+                <select th:field="*{productId1}">
+                    <option value="">— Aucun —</option>
+                    <option th:each="p : ${products}" th:value="${p.id}"
+                            th:text="${p.name} + ' — ' + ${#numbers.formatDecimal(p.price, 1, 2)} + ' DT (stock ' + ${p.stock} + ')'"></option>
+                </select>
+            </label>
+            <label>Quantité
+                <input type="number" min="1" th:field="*{quantity1}">
+            </label>
+        </div>
+
+        <div class="line">
+            <label>Produit 2
+                <select th:field="*{productId2}">
+                    <option value="">— Aucun —</option>
+                    <option th:each="p : ${products}" th:value="${p.id}"
+                            th:text="${p.name} + ' — ' + ${#numbers.formatDecimal(p.price, 1, 2)} + ' DT (stock ' + ${p.stock} + ')'"></option>
+                </select>
+            </label>
+            <label>Quantité
+                <input type="number" min="1" th:field="*{quantity2}">
+            </label>
+        </div>
+
+        <div class="line">
+            <label>Produit 3
+                <select th:field="*{productId3}">
+                    <option value="">— Aucun —</option>
+                    <option th:each="p : ${products}" th:value="${p.id}"
+                            th:text="${p.name} + ' — ' + ${#numbers.formatDecimal(p.price, 1, 2)} + ' DT (stock ' + ${p.stock} + ')'"></option>
+                </select>
+            </label>
+            <label>Quantité
+                <input type="number" min="1" th:field="*{quantity3}">
+            </label>
+        </div>
+
+        <p class="hint">Le total est calculé par le service Commandes à partir des prix réels du service Produits.</p>
+
+        <div class="actions">
+            <a class="btn" th:href="@{/commandes}">Annuler</a>
+            <button class="btn primary" type="submit">Créer la commande</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>

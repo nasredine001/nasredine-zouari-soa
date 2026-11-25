@@ -1,0 +1,16 @@
+# Maven
+target/
+bin/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Logs et fichiers système
+*.log
+logs/
+.DS_Store
+Thumbs.db
+
+# Archives locales
+*.zip

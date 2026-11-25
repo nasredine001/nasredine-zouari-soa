@@ -1,0 +1,89 @@
+# ==========================================
+# TYPES MÉTIERS
+# ==========================================
+
+# Représente une commande client
+type Order {
+    id: ID!
+    customerId: ID!
+    orderDate: String!
+    status: String!
+    totalAmount: Float!
+    delivered: Boolean!
+    items: [OrderItem!]!
+    customer: Customer
+}
+
+# Représente une ligne d'article dans une commande
+type OrderItem {
+    id: ID!
+    productId: ID!          # ID brut stocké dans le micro-service Commandes
+    quantity: Int!
+    unitPrice: Float!
+    # Champ enrichi : le BFF va chercher le détail complet du produit
+    # auprès du micro-service Produits grâce au DataLoader (anti N+1)
+    product: Product
+}
+
+# Représente un produit (géré par le micro-service Produits)
+type Product {
+    id: ID!
+    name: String!
+    description: String
+    price: Float!
+    stock: Int!
+}
+
+# Type conservé pour rester conforme au schéma du TP4.
+# Aucun service client n'est fourni : ce champ reste null.
+type Customer {
+    id: ID!
+    name: String
+}
+
+# ==========================================
+# INPUTS (Objets de transfert pour les mutations)
+# ==========================================
+
+input ProductInput {
+    name: String!
+    description: String
+    price: Float!
+    stock: Int!
+}
+
+input OrderItemInput {
+    productId: ID!
+    quantity: Int!
+}
+
+input OrderInput {
+    customerId: ID!
+    items: [OrderItemInput!]!
+}
+
+# ==========================================
+# QUERIES (Opérations de lecture)
+# ==========================================
+
+type Query {
+    products: [Product!]!
+    productById(id: ID!): Product
+    orders: [Order!]!
+    orderById(id: ID!): Order
+    ordersByCustomer(customerId: ID!): [Order!]!
+    # Filtre livrées / non livrées
+    ordersByDelivery(delivered: Boolean!): [Order!]!
+    nonDeliveredOrders: [Order!]!
+}
+
+# ==========================================
+# MUTATIONS (Opérations d'écriture / modification)
+# ==========================================
+
+type Mutation {
+    createProduct(input: ProductInput!): Product!
+    createOrder(input: OrderInput!): Order!
+    updateOrderStatus(id: ID!, status: String!): Order!
+    updateOrderDelivery(id: ID!, delivered: Boolean!): Order!
+}
